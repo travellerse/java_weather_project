@@ -1,0 +1,6 @@
+# 项目排除路径
+/out/
+java_weather_project.iml
+.idea
+code
+lib
