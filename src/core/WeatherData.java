@@ -67,8 +67,10 @@ public abstract class WeatherData {
             }
             in.close();
             data = new JSONObject(response.toString());
-            this.lat = data.getJSONObject("coord").getDouble("lat");
-            this.lon = data.getJSONObject("coord").getDouble("lon");
+            this.lat = data.getDouble("lat");
+            this.lon = data.getDouble("lon");
+            System.out.println(this.lat);
+            System.out.println(this.lon);
         }
     }
 
