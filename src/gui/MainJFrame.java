@@ -4,6 +4,8 @@
 
 package gui;
 
+import core.AirPolutionData;
+import core.FutureWeatherData;
 import core.Utils;
 import core.CurrentWeatherData;
 
@@ -23,7 +25,9 @@ public class MainJFrame extends JFrame {
 
     public Utils core = new Utils();
 
-    public CurrentWeatherData currentWeatherData = new CurrentWeatherData("39.906217", "116.3912757");
+    public CurrentWeatherData currentWeatherData = new CurrentWeatherData("Beijing");
+    public FutureWeatherData futureWeatherData = new FutureWeatherData("Beijing");
+    public AirPolutionData airPolutionData = new AirPolutionData("Beijing");
 
     public static void main(String[] args) {
         JFrame frame = new MainJFrame();
@@ -42,14 +46,15 @@ public class MainJFrame extends JFrame {
     }
 
     private void changeWeatherShow() throws IOException, URISyntaxException {
-        this.currentWeatherData.getCurrentWeatherData();
-        this.currentWeather.setText(this.currentWeatherData.getWeather());
-        this.currentTemperature.setText(this.currentWeatherData.getTemperature() + "℃");
-        this.currentWind.setText("Wind: "+this.currentWeatherData.getWind()+ "m/s");
-        this.currentHumidity.setText("Humidity: "+this.currentWeatherData.getHumidity() + "%");
-        this.currentClouds.setText("Clodus: "+this.currentWeatherData.getClouds() + "%");
-        System.out.println("/image/" + this.currentWeatherData.getIconId() + "@2x.png");
-        this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.getIconId() + "@2x.png")));
+        this.currentWeatherData.getWeatherData();
+        this.currentWeatherData.analyzeWeatherData();
+        this.currentWeather.setText(this.currentWeatherData.weather);
+        this.currentTemperature.setText(this.currentWeatherData.temperature + "℃");
+        this.currentWind.setText("Wind: "+this.currentWeatherData.wind+ "m/s");
+        this.currentHumidity.setText("Humidity: "+this.currentWeatherData.humidity + "%");
+        this.currentClouds.setText("Clodus: "+this.currentWeatherData.clouds + "%");
+        System.out.println("/image/" + this.currentWeatherData.iconId + "@2x.png");
+        this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
     }
     private void timeListener(ActionEvent e) {
         this.currentTime.setText(core.getCurrentTime());
