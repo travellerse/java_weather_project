@@ -20,15 +20,15 @@ public abstract class WeatherData {
     public String weatherClass;
     public JSONObject data;
 
-    public WeatherData(String city, String weatherClass) {
+    public WeatherData(String city, String weatherClass) throws IOException, URISyntaxException {
         this.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-        this.city = city;
+        changeCity(city);
         this.weatherClass = weatherClass;
     }
 
-    public void changeCity(String city) {
+    public void changeCity(String city) throws IOException, URISyntaxException {
         this.city = city;
-        //change lat and lon
+        this.getCityPosition();
     }
 
     public void getWeatherData() throws IOException, URISyntaxException {
@@ -46,7 +46,6 @@ public abstract class WeatherData {
             }
             in.close();
             data = new JSONObject(response.toString());
-            System.out.println(date);
         }
     }
 
@@ -63,15 +62,14 @@ public abstract class WeatherData {
             String inputLine;
             StringBuilder response = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
+                inputLine = inputLine.replace("[", "");
+                inputLine = inputLine.replace("]", "");
                 response.append(inputLine);
             }
             in.close();
             data = new JSONObject(response.toString());
             this.lat = data.getDouble("lat");
             this.lon = data.getDouble("lon");
-            System.out.println(this.lat);
-            System.out.println(this.lon);
         }
     }
-
 }

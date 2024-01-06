@@ -4,6 +4,7 @@
 
 package gui;
 
+import javax.swing.table.*;
 import core.AirPolutionData;
 import core.FutureWeatherData;
 import core.Utils;
@@ -29,13 +30,13 @@ public class MainJFrame extends JFrame {
     public FutureWeatherData futureWeatherData = new FutureWeatherData("Beijing");
     public AirPolutionData airPolutionData = new AirPolutionData("Beijing");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         JFrame frame = new MainJFrame();
         frame.setTitle("Weather");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
-    public MainJFrame() {
+    public MainJFrame() throws IOException, URISyntaxException {
         initComponents();
         new Timer(1000, this::timeListener).start();
         try {
@@ -54,12 +55,25 @@ public class MainJFrame extends JFrame {
         this.currentHumidity.setText("Humidity: "+this.currentWeatherData.humidity + "%");
         this.currentClouds.setText("Clodus: "+this.currentWeatherData.clouds + "%");
         System.out.println("/image/" + this.currentWeatherData.iconId + "@2x.png");
-        this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
+        try{
+            this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
+        }
+        catch (Exception e){
+            core.downloadIcon(this.currentWeatherData.iconId);
+            this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
+        }
     }
+
     private void timeListener(ActionEvent e) {
         this.currentTime.setText(core.getCurrentTime());
         if(core.isIntegerHour()){
-
+            try {
+                changeWeatherShow();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -67,16 +81,19 @@ public class MainJFrame extends JFrame {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         ResourceBundle bundle = ResourceBundle.getBundle("localization.lang");
         titlePanel = new JPanel();
-        currentPosition = new JLabel();
         currentTime = new JLabel();
+        currentPosition = new JLabel();
+        refreshButton = new JButton();
         currentWeatherPanel = new JPanel();
         weatherIcon = new JLabel();
         currentTemperature = new JLabel();
-        currentWind = new JLabel();
         currentWeather = new JLabel();
+        currentWind = new JLabel();
         currentHumidity = new JLabel();
         currentClouds = new JLabel();
         futureWeatherPanel = new JPanel();
+        panel1 = new JPanel();
+        panel2 = new JPanel();
 
         //======== this ========
         var contentPane = getContentPane();
@@ -88,19 +105,25 @@ public class MainJFrame extends JFrame {
             titlePanel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
             titlePanel.setLayout(new BorderLayout());
 
-            //---- currentPosition ----
-            currentPosition.setText(bundle.getString("currentPosition.text"));
-            currentPosition.setFont(new Font("Inter", Font.BOLD, 24));
-            currentPosition.setBackground(new Color(0x00ffffff, true));
-            currentPosition.setBorder(new MatteBorder(0, 0, 2, 0, Color.red));
-            titlePanel.add(currentPosition, BorderLayout.PAGE_END);
-
             //---- currentTime ----
             currentTime.setText(bundle.getString("currentTime.text"));
             currentTime.setFont(new Font("Inter", Font.BOLD, 18));
             currentTime.setBackground(new Color(0x00ffffff, true));
             currentTime.setBorder(null);
             titlePanel.add(currentTime, BorderLayout.CENTER);
+
+            //---- currentPosition ----
+            currentPosition.setText(bundle.getString("currentPosition.text"));
+            currentPosition.setFont(new Font("Inter", Font.BOLD, 24));
+            currentPosition.setBackground(new Color(0x00ffffff, true));
+            currentPosition.setBorder(new MatteBorder(0, 0, 2, 0, Color.red));
+            titlePanel.add(currentPosition, BorderLayout.NORTH);
+
+            //---- refreshButton ----
+            refreshButton.setText("Refresh");
+            refreshButton.setBackground(new Color(0xff9933));
+            refreshButton.setBorder(null);
+            titlePanel.add(refreshButton, BorderLayout.EAST);
         }
         contentPane.add(titlePanel, BorderLayout.NORTH);
 
@@ -119,19 +142,19 @@ public class MainJFrame extends JFrame {
             currentTemperature.setBorder(null);
             currentWeatherPanel.add(currentTemperature);
 
-            //---- currentWind ----
-            currentWind.setBackground(new Color(0x00ffffff, true));
-            currentWind.setText(" Wind: 0.2 m/s");
-            currentWind.setFont(new Font("Inter", Font.PLAIN, 16));
-            currentWind.setBorder(null);
-            currentWeatherPanel.add(currentWind);
-
             //---- currentWeather ----
             currentWeather.setBackground(new Color(0x00ffffff, true));
             currentWeather.setText("Clear Sky");
             currentWeather.setFont(new Font("Inter", Font.BOLD, 24));
             currentWeather.setBorder(null);
             currentWeatherPanel.add(currentWeather);
+
+            //---- currentWind ----
+            currentWind.setBackground(new Color(0x00ffffff, true));
+            currentWind.setText(" Wind: 0.2 m/s");
+            currentWind.setFont(new Font("Inter", Font.PLAIN, 16));
+            currentWind.setBorder(null);
+            currentWeatherPanel.add(currentWind);
 
             //---- currentHumidity ----
             currentHumidity.setBackground(new Color(0x00ffffff, true));
@@ -152,6 +175,48 @@ public class MainJFrame extends JFrame {
         //======== futureWeatherPanel ========
         {
             futureWeatherPanel.setLayout(new GridLayout(2, 1));
+
+            //======== panel1 ========
+            {
+                panel1.setLayout(null);
+
+                {
+                    // compute preferred size
+                    Dimension preferredSize = new Dimension();
+                    for(int i = 0; i < panel1.getComponentCount(); i++) {
+                        Rectangle bounds = panel1.getComponent(i).getBounds();
+                        preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                        preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                    }
+                    Insets insets = panel1.getInsets();
+                    preferredSize.width += insets.right;
+                    preferredSize.height += insets.bottom;
+                    panel1.setMinimumSize(preferredSize);
+                    panel1.setPreferredSize(preferredSize);
+                }
+            }
+            futureWeatherPanel.add(panel1);
+
+            //======== panel2 ========
+            {
+                panel2.setLayout(null);
+
+                {
+                    // compute preferred size
+                    Dimension preferredSize = new Dimension();
+                    for(int i = 0; i < panel2.getComponentCount(); i++) {
+                        Rectangle bounds = panel2.getComponent(i).getBounds();
+                        preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                        preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                    }
+                    Insets insets = panel2.getInsets();
+                    preferredSize.width += insets.right;
+                    preferredSize.height += insets.bottom;
+                    panel2.setMinimumSize(preferredSize);
+                    panel2.setPreferredSize(preferredSize);
+                }
+            }
+            futureWeatherPanel.add(panel2);
         }
         contentPane.add(futureWeatherPanel, BorderLayout.CENTER);
         pack();
@@ -161,15 +226,18 @@ public class MainJFrame extends JFrame {
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
     private JPanel titlePanel;
-    private JLabel currentPosition;
     private JLabel currentTime;
+    private JLabel currentPosition;
+    private JButton refreshButton;
     private JPanel currentWeatherPanel;
     private JLabel weatherIcon;
     private JLabel currentTemperature;
-    private JLabel currentWind;
     private JLabel currentWeather;
+    private JLabel currentWind;
     private JLabel currentHumidity;
     private JLabel currentClouds;
     private JPanel futureWeatherPanel;
+    private JPanel panel1;
+    private JPanel panel2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

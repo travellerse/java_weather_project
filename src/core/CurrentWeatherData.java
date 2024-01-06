@@ -18,7 +18,7 @@ public class CurrentWeatherData extends WeatherData {
     public String clouds;
     public String iconId;
 
-    public CurrentWeatherData(String city) {
+    public CurrentWeatherData(String city) throws IOException, URISyntaxException {
         super(city, "weather");
     }
 
@@ -30,6 +30,5 @@ public class CurrentWeatherData extends WeatherData {
         this.humidity = String.valueOf(data.getJSONObject("main").getDouble("humidity"));
         this.clouds = String.valueOf(data.getJSONObject("clouds").getDouble("all"));
         this.iconId = data.getJSONArray("weather").getJSONObject(0).getString("icon");
-        new Utils().downloadIcon(this.iconId);
     }
 }

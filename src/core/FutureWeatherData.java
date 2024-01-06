@@ -3,11 +3,14 @@ package core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class FutureWeatherData extends WeatherData {
 
     public DataSet dataSet[] = new DataSet[5];
 
-    public FutureWeatherData(String city) {
+    public FutureWeatherData(String city) throws IOException, URISyntaxException {
         super(city, "forecast");
     }
 

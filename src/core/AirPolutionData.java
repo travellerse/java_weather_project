@@ -3,6 +3,9 @@ package core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class AirPolutionData extends WeatherData {
     public double co;
     public double no;
@@ -13,7 +16,7 @@ public class AirPolutionData extends WeatherData {
     public double pm10;
     public double nh3;
 
-    public AirPolutionData(String city) {
+    public AirPolutionData(String city) throws IOException, URISyntaxException {
         super(city, "air_pollution");
     }
 

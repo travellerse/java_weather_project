@@ -13,15 +13,6 @@ new FormModel {
 				"background": new java.awt.Color( 255, 153, 51, 255 )
 				"border": new javax.swing.border.MatteBorder( 0, 0, 2, 0, sfield java.awt.Color black )
 				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "currentPosition"
-					"text": new FormMessage( null, "currentPosition.text" )
-					"font": new java.awt.Font( "Inter", 1, 24 )
-					"background": new java.awt.Color( 255, 255, 255, 0 )
-					"border": new javax.swing.border.MatteBorder( 0, 0, 2, 0, sfield java.awt.Color red )
-				}, new FormLayoutConstraints( class java.lang.String ) {
-					"value": "Last"
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentTime"
 					"text": new FormMessage( null, "currentTime.text" )
 					"font": new java.awt.Font( "Inter", 1, 18 )
@@ -29,6 +20,23 @@ new FormModel {
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "currentPosition"
+					"text": new FormMessage( null, "currentPosition.text" )
+					"font": new java.awt.Font( "Inter", 1, 24 )
+					"background": new java.awt.Color( 255, 255, 255, 0 )
+					"border": new javax.swing.border.MatteBorder( 0, 0, 2, 0, sfield java.awt.Color red )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "refreshButton"
+					"text": "Refresh"
+					"background": new java.awt.Color( 255, 153, 51, 255 )
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "North"
@@ -50,17 +58,17 @@ new FormModel {
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "currentWind"
-					"background": new java.awt.Color( 255, 255, 255, 0 )
-					"text": " Wind: 0.2 m/s"
-					"font": new java.awt.Font( "Inter", 0, 16 )
-					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentWeather"
 					"background": new java.awt.Color( 255, 255, 255, 0 )
 					"text": "Clear Sky"
 					"font": new java.awt.Font( "Inter", 1, 24 )
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "currentWind"
+					"background": new java.awt.Color( 255, 255, 255, 0 )
+					"text": " Wind: 0.2 m/s"
+					"font": new java.awt.Font( "Inter", 0, 16 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -85,6 +93,12 @@ new FormModel {
 				"rows": 2
 			} ) {
 				name: "futureWeatherPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+					name: "panel1"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+					name: "panel2"
+				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
 			} )
