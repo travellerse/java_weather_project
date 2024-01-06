@@ -55,7 +55,23 @@ public class FutureWeatherData extends WeatherData {
         }
     }
 
-    class DataSet {
+    public int[] getMaxTemperature() {
+        int[] maxTemperature = new int[5];
+        for (int i = 0; i < 5; i++) {
+            maxTemperature[i] = dataSet[i].maxTemperature;
+        }
+        return maxTemperature;
+    }
+
+    public int[] getMinTemperature() {
+        int[] minTemperature = new int[5];
+        for (int i = 0; i < 5; i++) {
+            minTemperature[i] = dataSet[i].minTemperature;
+        }
+        return minTemperature;
+    }
+
+    public class DataSet {
         public int maxTemperature;
         public int minTemperature;
         public String iconId;

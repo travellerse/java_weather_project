@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8.1" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.1.0.348" Java: "17.0.8.1" encoding: "UTF-8"
 
 new FormModel {
 	"i18n.autoExternalize": true
@@ -35,20 +35,24 @@ new FormModel {
 					"text": "Refresh"
 					"background": new java.awt.Color( 255, 153, 51, 255 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "refreshButtonMouseClicked", true ) )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "East"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "North"
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
-				"rows": 0
-				"columns": 3
-			} ) {
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 				name: "currentWeatherPanel"
+				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "weatherIcon"
 					"icon": new com.jformdesigner.model.SwingIcon( 0, "/image/10d@2x.png" )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"width": 100
+					"height": 100
+					"x": 0
+					"y": 0
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentTemperature"
@@ -56,6 +60,11 @@ new FormModel {
 					"text": "15℃"
 					"font": new java.awt.Font( "Inter", 1, 32 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"x": 100
+					"width": 100
+					"height": 100
+					"y": 0
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentWeather"
@@ -63,6 +72,10 @@ new FormModel {
 					"text": "Clear Sky"
 					"font": new java.awt.Font( "Inter", 1, 24 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"x": 200
+					"height": 100
+					"y": 0
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentWind"
@@ -70,6 +83,10 @@ new FormModel {
 					"text": " Wind: 0.2 m/s"
 					"font": new java.awt.Font( "Inter", 0, 16 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"y": 100
+					"width": 120
+					"height": 80
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentHumidity"
@@ -77,6 +94,11 @@ new FormModel {
 					"text": "Humidity: 56%"
 					"font": new java.awt.Font( "Inter", 0, 16 )
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"x": 120
+					"y": 100
+					"width": 120
+					"height": 80
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "currentClouds"
@@ -84,6 +106,11 @@ new FormModel {
 					"font": new java.awt.Font( "Inter", 0, 16 )
 					"text": "Clouds: 100%"
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+					"x": 240
+					"y": 100
+					"width": 120
+					"height": 80
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "West"
@@ -93,8 +120,52 @@ new FormModel {
 				"rows": 2
 			} ) {
 				name: "futureWeatherPanel"
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
-					name: "panel1"
+				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+					"columns": 5
+					"rows": 2
+				} ) {
+					name: "datePanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "dayLabel1"
+						"text": new FormMessage( null, "dayLabel1.text" )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "dayLabel2"
+						"text": new FormMessage( null, "dayLabel2.text" )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "dayLabel3"
+						"text": new FormMessage( null, "dayLabel3.text" )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "dayLabel4"
+						"text": new FormMessage( null, "dayLabel4.text" )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "dayLabel5"
+						"text": new FormMessage( null, "dayLabel5.text" )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "iconLabel1"
+						"minimumSize": new java.awt.Dimension( 100, 100 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "iconLabel2"
+						"minimumSize": new java.awt.Dimension( 100, 100 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "iconLabel3"
+						"minimumSize": new java.awt.Dimension( 100, 100 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "iconLabel4"
+						"minimumSize": new java.awt.Dimension( 100, 100 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "iconLabel5"
+						"minimumSize": new java.awt.Dimension( 100, 100 )
+					} )
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 					name: "panel2"
@@ -104,7 +175,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 5, 10 )
-			"size": new java.awt.Dimension( 700, 265 )
+			"size": new java.awt.Dimension( 735, 385 )
 		} )
 	}
 }

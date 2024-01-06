@@ -17,7 +17,7 @@ public class Utils {
     }
 
     public boolean isIntegerHour() {
-        SimpleDateFormat formatter = new SimpleDateFormat("mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("mmss");
         Date date = new Date(System.currentTimeMillis());
         return Integer.parseInt(formatter.format(date)) == 0;
     }
