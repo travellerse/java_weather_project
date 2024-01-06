@@ -4,21 +4,21 @@
 
 package gui;
 
-import javax.swing.plaf.metal.*;
-import javax.swing.table.*;
 import core.AirPolutionData;
+import core.CurrentWeatherData;
 import core.FutureWeatherData;
 import core.Utils;
-import core.CurrentWeatherData;
 
+import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.border.*;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
 /**
  * @author 13943
@@ -97,6 +97,7 @@ public class MainJFrame extends JFrame {
     }
 
     private void paintBrokenLine(Graphics g, int[] maxTemperature,int[] minTemperature) {
+        //Unfinished
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2.0f));
