@@ -1,7 +1,10 @@
 package core;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -10,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Utils {
+
     public String getCurrentTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm z");
         Date date = new Date(System.currentTimeMillis());
@@ -24,11 +28,12 @@ public class Utils {
 
     public void downloadIcon(String iconId) {
         String path = "resources/image/" + iconId + "@2x.png";
-        String url= "https://openweathermap.org/img/wn/" + iconId + "@2x.png";
-        if(Path.of(path).toFile().exists()){
+        String url = "https://openweathermap.org/img/wn/" + iconId + "@2x.png";
+        if (Path.of(path).toFile().exists()) {
             return;
         }
         try {
+            System.out.println(url);
             InputStream inputStream = new URL(url).openStream();
             OutputStream outputStream = new FileOutputStream(path);
             byte[] buffer = new byte[2048];
@@ -45,12 +50,7 @@ public class Utils {
         }
     }
 
-    public static void main(String[] args) {
-        Utils utils = new Utils();
-        utils.downloadIcon("01n");
-    }
-
-    public int getDateDifference(String begin,String end){
+    public int getDateDifference(String begin, String end) {
         DateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
         int index = -1;
         try {

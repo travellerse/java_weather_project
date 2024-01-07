@@ -30,14 +30,31 @@ public class MainJFrame extends JFrame {
     public CurrentWeatherData currentWeatherData = new CurrentWeatherData("Beijing");
     public FutureWeatherData futureWeatherData = new FutureWeatherData("Beijing");
     public AirPolutionData airPolutionData = new AirPolutionData("Beijing");
-
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        JFrame frame = new MainJFrame();
-        frame.setTitle("Weather");
-        frame.setSize(720, 280);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    private JPanel titlePanel;
+    private JLabel currentTime;
+    private JLabel currentPosition;
+    private JButton refreshButton;
+    private JPanel currentWeatherPanel;
+    private JLabel weatherIcon;
+    private JLabel currentTemperature;
+    private JLabel currentWeather;
+    private JLabel currentWind;
+    private JLabel currentHumidity;
+    private JLabel currentClouds;
+    private JPanel futureWeatherPanel;
+    private JPanel datePanel;
+    private JLabel dayLabel1;
+    private JLabel dayLabel2;
+    private JLabel dayLabel3;
+    private JLabel dayLabel4;
+    private JLabel dayLabel5;
+    private JLabel iconLabel1;
+    private JLabel iconLabel2;
+    private JLabel iconLabel3;
+    private JLabel iconLabel4;
+    private JLabel iconLabel5;
+    private JPanel panel2;
     public MainJFrame() throws IOException, URISyntaxException {
         initComponents();
         new Timer(1000, this::timeListener).start();
@@ -50,19 +67,26 @@ public class MainJFrame extends JFrame {
         }
     }
 
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        JFrame frame = new MainJFrame();
+        frame.setTitle("Weather");
+        frame.setSize(800, 320);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
     private void changeWeatherShow() throws IOException, URISyntaxException {
         this.currentWeatherData.getWeatherData();
         this.currentWeatherData.analyzeWeatherData();
         this.currentWeather.setText(this.currentWeatherData.weather);
         this.currentTemperature.setText(this.currentWeatherData.temperature + "℃");
-        this.currentWind.setText("Wind: "+this.currentWeatherData.wind+ "m/s");
-        this.currentHumidity.setText("Humidity: "+this.currentWeatherData.humidity + "%");
-        this.currentClouds.setText("Clodus: "+this.currentWeatherData.clouds + "%");
+        this.currentWind.setText("Wind: " + this.currentWeatherData.wind + "m/s");
+        this.currentHumidity.setText("Humidity: " + this.currentWeatherData.humidity + "%");
+        this.currentClouds.setText("Clodus: " + this.currentWeatherData.clouds + "%");
         System.out.println("/image/" + this.currentWeatherData.iconId + "@2x.png");
-        try{
+        try {
             this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             core.downloadIcon(this.currentWeatherData.iconId);
             this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
         }
@@ -81,12 +105,12 @@ public class MainJFrame extends JFrame {
     private void changeWeatherCalendarShow() throws IOException, URISyntaxException {
         this.futureWeatherData.getWeatherData();
         this.futureWeatherData.analyzeWeatherData();
-        this.dayLabel1.setText("Today\n"+futureWeatherData.dataSet[0].date);
+        this.dayLabel1.setText("Today\n" + futureWeatherData.dataSet[0].date);
         this.dayLabel2.setText(futureWeatherData.dataSet[1].date);
         this.dayLabel3.setText(futureWeatherData.dataSet[2].date);
         this.dayLabel4.setText(futureWeatherData.dataSet[3].date);
         this.dayLabel5.setText(futureWeatherData.dataSet[4].date);
-        for(int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             core.downloadIcon(futureWeatherData.dataSet[i].iconId);
         }
         this.iconLabel1.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[0].iconId + "@2x.png")));
@@ -96,14 +120,14 @@ public class MainJFrame extends JFrame {
         this.iconLabel5.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[4].iconId + "@2x.png")));
     }
 
-    private void paintBrokenLine(Graphics g, int[] maxTemperature,int[] minTemperature) {
+    private void paintBrokenLine(Graphics g, int[] maxTemperature, int[] minTemperature) {
         //Unfinished
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2.0f));
         System.out.println(Arrays.toString(maxTemperature));
         System.out.println(Arrays.toString(minTemperature));
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++) {
             g2d.drawLine(100 + i * 100, 100 - maxTemperature[i], 100 + (i + 1) * 100, 100 - maxTemperature[i + 1]);
             g2d.drawLine(100 + i * 100, 100 - minTemperature[i], 100 + (i + 1) * 100, 100 - minTemperature[i + 1]);
         }
@@ -111,7 +135,7 @@ public class MainJFrame extends JFrame {
 
     private void timeListener(ActionEvent e) {
         this.currentTime.setText(core.getCurrentTime());
-        if(core.isIntegerHour()){
+        if (core.isIntegerHour()) {
             try {
                 changeWeatherShow();
             } catch (IOException | URISyntaxException ex) {
@@ -342,31 +366,5 @@ public class MainJFrame extends JFrame {
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
     }
-
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    private JPanel titlePanel;
-    private JLabel currentTime;
-    private JLabel currentPosition;
-    private JButton refreshButton;
-    private JPanel currentWeatherPanel;
-    private JLabel weatherIcon;
-    private JLabel currentTemperature;
-    private JLabel currentWeather;
-    private JLabel currentWind;
-    private JLabel currentHumidity;
-    private JLabel currentClouds;
-    private JPanel futureWeatherPanel;
-    private JPanel datePanel;
-    private JLabel dayLabel1;
-    private JLabel dayLabel2;
-    private JLabel dayLabel3;
-    private JLabel dayLabel4;
-    private JLabel dayLabel5;
-    private JLabel iconLabel1;
-    private JLabel iconLabel2;
-    private JLabel iconLabel3;
-    private JLabel iconLabel4;
-    private JLabel iconLabel5;
-    private JPanel panel2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
