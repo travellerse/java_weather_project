@@ -168,7 +168,7 @@ new FormModel {
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
-					name: "panel2"
+					name: "lineJPanel"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
@@ -179,4 +179,3 @@ new FormModel {
 		} )
 	}
 }
-

@@ -4,10 +4,7 @@
 
 package gui;
 
-import core.AirPolutionData;
-import core.CurrentWeatherData;
-import core.FutureWeatherData;
-import core.Utils;
+import core.WeatherServer;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
@@ -15,9 +12,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
@@ -25,11 +19,7 @@ import java.util.ResourceBundle;
  */
 public class MainJFrame extends JFrame {
 
-    public Utils core = new Utils();
-
-    public CurrentWeatherData currentWeatherData = new CurrentWeatherData("Beijing");
-    public FutureWeatherData futureWeatherData = new FutureWeatherData("Beijing");
-    public AirPolutionData airPolutionData = new AirPolutionData("Beijing");
+    public WeatherServer weatherServer = new WeatherServer();
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
     private JPanel titlePanel;
     private JLabel currentTime;
@@ -54,104 +44,87 @@ public class MainJFrame extends JFrame {
     private JLabel iconLabel3;
     private JLabel iconLabel4;
     private JLabel iconLabel5;
-    private JPanel panel2;
-    public MainJFrame() throws IOException, URISyntaxException {
+    private JPanel lineJPanel;
+    public MainJFrame() {
+        weatherServer.start((long) (1000));
         initComponents();
         new Timer(1000, this::timeListener).start();
-        try {
-            changeWeatherShow();
-            changeWeatherCalendarShow();
-            paintBrokenLine(panel2.getGraphics(), futureWeatherData.getMaxTemperature(), futureWeatherData.getMinTemperature());
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        changeWeatherShow();
+        changeWeatherCalendarShow();
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) {
         JFrame frame = new MainJFrame();
         frame.setTitle("Weather");
-        frame.setSize(800, 320);
+        frame.setSize(800, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-    private void changeWeatherShow() throws IOException, URISyntaxException {
-        this.currentWeatherData.getWeatherData();
-        this.currentWeatherData.analyzeWeatherData();
-        this.currentWeather.setText(this.currentWeatherData.weather);
-        this.currentTemperature.setText(this.currentWeatherData.temperature + "℃");
-        this.currentWind.setText("Wind: " + this.currentWeatherData.wind + "m/s");
-        this.currentHumidity.setText("Humidity: " + this.currentWeatherData.humidity + "%");
-        this.currentClouds.setText("Clodus: " + this.currentWeatherData.clouds + "%");
-        System.out.println("/image/" + this.currentWeatherData.iconId + "@2x.png");
-        try {
-            this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
-        } catch (Exception e) {
-            core.downloadIcon(this.currentWeatherData.iconId);
-            this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.currentWeatherData.iconId + "@2x.png")));
-        }
+    private void changeWeatherShow() {
+        this.currentWeather.setText(this.weatherServer.currentWeatherData.weather);
+        this.currentTemperature.setText(this.weatherServer.currentWeatherData.temperature + "℃");
+        this.currentWind.setText("Wind: " + this.weatherServer.currentWeatherData.wind + "m/s");
+        this.currentHumidity.setText("Humidity: " + this.weatherServer.currentWeatherData.humidity + "%");
+        this.currentClouds.setText("Clodus: " + this.weatherServer.currentWeatherData.clouds + "%");
+        System.out.println("/image/" + this.weatherServer.currentWeatherData.iconId + "@2x.png");
+        this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.currentWeatherData.iconId + "@2x.png")));
 
-        airPolutionData.getWeatherData();
-        airPolutionData.analyzeWeatherData();
-        System.out.println(airPolutionData.co);
-        System.out.println(airPolutionData.no);
-        System.out.println(airPolutionData.no2);
-        System.out.println(airPolutionData.o3);
-        System.out.println(airPolutionData.so2);
-        System.out.println(airPolutionData.pm2_5);
-        System.out.println(airPolutionData.calculateAQI());
+        System.out.println(this.weatherServer.airPolutionData.co);
+        System.out.println(this.weatherServer.airPolutionData.no);
+        System.out.println(this.weatherServer.airPolutionData.no2);
+        System.out.println(this.weatherServer.airPolutionData.o3);
+        System.out.println(this.weatherServer.airPolutionData.so2);
+        System.out.println(this.weatherServer.airPolutionData.pm2_5);
+        System.out.println(this.weatherServer.airPolutionData.calculateAQI());
     }
 
-    private void changeWeatherCalendarShow() throws IOException, URISyntaxException {
-        this.futureWeatherData.getWeatherData();
-        this.futureWeatherData.analyzeWeatherData();
-        this.dayLabel1.setText("Today\n" + futureWeatherData.dataSet[0].date);
-        this.dayLabel2.setText(futureWeatherData.dataSet[1].date);
-        this.dayLabel3.setText(futureWeatherData.dataSet[2].date);
-        this.dayLabel4.setText(futureWeatherData.dataSet[3].date);
-        this.dayLabel5.setText(futureWeatherData.dataSet[4].date);
-        for (int i = 0; i < 5; i++) {
-            core.downloadIcon(futureWeatherData.dataSet[i].iconId);
-        }
-        this.iconLabel1.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[0].iconId + "@2x.png")));
-        this.iconLabel2.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[1].iconId + "@2x.png")));
-        this.iconLabel3.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[2].iconId + "@2x.png")));
-        this.iconLabel4.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[3].iconId + "@2x.png")));
-        this.iconLabel5.setIcon(new ImageIcon(getClass().getResource("/image/" + futureWeatherData.dataSet[4].iconId + "@2x.png")));
+    private void changeWeatherCalendarShow() {
+        this.dayLabel1.setText("Today\n" + this.weatherServer.futureWeatherData.dataSet[0].date);
+        this.dayLabel2.setText(this.weatherServer.futureWeatherData.dataSet[1].date);
+        this.dayLabel3.setText(this.weatherServer.futureWeatherData.dataSet[2].date);
+        this.dayLabel4.setText(this.weatherServer.futureWeatherData.dataSet[3].date);
+        this.dayLabel5.setText(this.weatherServer.futureWeatherData.dataSet[4].date);
+        this.iconLabel1.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[0].iconId + "@2x.png")));
+        this.iconLabel2.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[1].iconId + "@2x.png")));
+        this.iconLabel3.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[2].iconId + "@2x.png")));
+        this.iconLabel4.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[3].iconId + "@2x.png")));
+        this.iconLabel5.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[4].iconId + "@2x.png")));
     }
 
     private void paintBrokenLine(Graphics g, int[] maxTemperature, int[] minTemperature) {
-        //Unfinished
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2.0f));
-        System.out.println(Arrays.toString(maxTemperature));
-        System.out.println(Arrays.toString(minTemperature));
+
         for (int i = 0; i < 4; i++) {
-            g2d.drawLine(100 + i * 100, 100 - maxTemperature[i], 100 + (i + 1) * 100, 100 - maxTemperature[i + 1]);
-            g2d.drawLine(100 + i * 100, 100 - minTemperature[i], 100 + (i + 1) * 100, 100 - minTemperature[i + 1]);
+            int x1 = 100 + i * 100;
+            int y1_max = 100 - maxTemperature[i];
+            int x2 = 100 + (i + 1) * 100;
+            int y2_max = 100 - maxTemperature[i + 1];
+
+            int y1_min = 100 - minTemperature[i];
+            int y2_min = 100 - minTemperature[i + 1];
+
+            // Draw lines for max temperature
+            g2d.drawLine(x1, y1_max, x2, y2_max);
+
+            // Draw lines for min temperature
+            g2d.drawLine(x1, y1_min, x2, y2_min);
         }
     }
 
     private void timeListener(ActionEvent e) {
-        this.currentTime.setText(core.getCurrentTime());
-        if (core.isIntegerHour()) {
-            try {
-                changeWeatherShow();
-            } catch (IOException | URISyntaxException ex) {
-                throw new RuntimeException(ex);
-            }
+        this.currentTime.setText(this.weatherServer.getCurrentTime());
+        if (this.weatherServer.isIntegerHour()) {
+            changeWeatherShow();
         }
     }
 
     private void refreshButtonMouseClicked(MouseEvent e) {
         refreshButton.setText("Refreshing...");
         refreshButton.setEnabled(false);
-        try {
-            changeWeatherShow();
-        } catch (IOException | URISyntaxException ex) {
-            throw new RuntimeException(ex);
-        }
+        changeWeatherShow();
         refreshButton.setText("Refresh");
         refreshButton.setEnabled(true);
     }
@@ -182,7 +155,7 @@ public class MainJFrame extends JFrame {
         iconLabel3 = new JLabel();
         iconLabel4 = new JLabel();
         iconLabel5 = new JLabel();
-        panel2 = new JPanel();
+        lineJPanel = new LineJPanel(this.weatherServer.futureWeatherData.getMaxTemperature(), this.weatherServer.futureWeatherData.getMinTemperature());
 
         //======== this ========
         var contentPane = getContentPane();
@@ -340,26 +313,26 @@ public class MainJFrame extends JFrame {
             }
             futureWeatherPanel.add(datePanel);
 
-            //======== panel2 ========
+            //======== lineJPanel ========
             {
-                panel2.setLayout(null);
+                lineJPanel.setLayout(null);
 
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < panel2.getComponentCount(); i++) {
-                        Rectangle bounds = panel2.getComponent(i).getBounds();
+                    for(int i = 0; i < lineJPanel.getComponentCount(); i++) {
+                        Rectangle bounds = lineJPanel.getComponent(i).getBounds();
                         preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                         preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
                     }
-                    Insets insets = panel2.getInsets();
+                    Insets insets = lineJPanel.getInsets();
                     preferredSize.width += insets.right;
                     preferredSize.height += insets.bottom;
-                    panel2.setMinimumSize(preferredSize);
-                    panel2.setPreferredSize(preferredSize);
+                    lineJPanel.setMinimumSize(preferredSize);
+                    lineJPanel.setPreferredSize(preferredSize);
                 }
             }
-            futureWeatherPanel.add(panel2);
+            futureWeatherPanel.add(lineJPanel);
         }
         contentPane.add(futureWeatherPanel, BorderLayout.CENTER);
         pack();

@@ -5,6 +5,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FutureWeatherData extends WeatherData {
 
@@ -30,7 +34,7 @@ public class FutureWeatherData extends WeatherData {
             if (dt_txt.equals(firstDate) && hour < 18) {
                 isAfterTime = Boolean.FALSE;
             }
-            int index = new Utils().getDateDifference(firstDate, dt_txt);
+            int index = getDateDifference(firstDate, dt_txt);
             if (index >= 5) {
                 break;
             }
@@ -69,6 +73,22 @@ public class FutureWeatherData extends WeatherData {
             minTemperature[i] = dataSet[i].minTemperature;
         }
         return minTemperature;
+    }
+
+    public int getDateDifference(String begin, String end) {
+        DateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+        int index = -1;
+        try {
+            Date star = dft.parse(begin);
+            Date endDay = dft.parse(end);
+            Long starTime = star.getTime();
+            Long endTime = endDay.getTime();
+            Long num = endTime - starTime;
+            index = (int) (num / 24 / 60 / 60 / 1000);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return index;
     }
 
     public class DataSet {
