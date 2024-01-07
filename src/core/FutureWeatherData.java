@@ -14,8 +14,8 @@ public class FutureWeatherData extends WeatherData {
 
     public DataSet[] dataSet = new DataSet[5];
 
-    public FutureWeatherData(String city) throws IOException, URISyntaxException {
-        super(city, "forecast");
+    public FutureWeatherData(CityData cityData) throws IOException, URISyntaxException {
+        super(cityData, "forecast");
     }
 
     @Override
@@ -55,7 +55,6 @@ public class FutureWeatherData extends WeatherData {
             //Data Unavailable
             dataSet[0].maxTemperature = -300;
             dataSet[0].minTemperature = -300;
-            dataSet[0].iconId = "Data Unavailable";
         }
     }
 

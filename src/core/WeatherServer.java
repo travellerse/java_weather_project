@@ -1,22 +1,26 @@
 package core;
 
+import org.json.JSONArray;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import static core.WeatherData.API_KEY;
 
 public class WeatherServer {
     public CurrentWeatherData currentWeatherData;
     public FutureWeatherData futureWeatherData;
     public AirPolutionData airPolutionData;
+    public CityData cityData = new CityData("Beijing", "Beijing", "CN", 39.9075, 116.3972);
 
     public static void main(String[] args) {
         String[] iconId = {"01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n", "09d", "09n", "10d", "10n", "11d", "11n", "13d", "13n", "50d", "50n"};
@@ -32,7 +36,6 @@ public class WeatherServer {
             return;
         }
         try {
-            System.out.println(url);
             InputStream inputStream = new URL(url).openStream();
             OutputStream outputStream = new FileOutputStream(path);
             byte[] buffer = new byte[2048];
@@ -42,7 +45,6 @@ public class WeatherServer {
             }
             inputStream.close();
             outputStream.close();
-            System.out.println(url);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "网络已断开");
@@ -72,10 +74,11 @@ public class WeatherServer {
         airPolutionData.calculateAQI();
     }
 
-    public void changeCity(String city) throws IOException, URISyntaxException {
-        currentWeatherData.changeCity(city);
-        futureWeatherData.changeCity(city);
-        airPolutionData.changeCity(city);
+    public void changeCity(CityData cityData) throws IOException, URISyntaxException {
+        currentWeatherData.changeCity(cityData);
+        futureWeatherData.changeCity(cityData);
+        airPolutionData.changeCity(cityData);
+        this.cityData = cityData;
         update();
     }
 
@@ -105,13 +108,12 @@ public class WeatherServer {
     public void start(Long milliseconds) {
         while (currentWeatherData == null || futureWeatherData == null || airPolutionData == null) {
             try {
-                currentWeatherData = new CurrentWeatherData("Beijing");
-                futureWeatherData = new FutureWeatherData("Beijing");
-                airPolutionData = new AirPolutionData("Beijing");
+                currentWeatherData = new CurrentWeatherData(new CityData("Beijing", "Beijing", "CN", 39.9075, 116.3972));
+                futureWeatherData = new FutureWeatherData(new CityData("Beijing", "Beijing", "CN", 39.9075, 116.3972));
+                airPolutionData = new AirPolutionData(new CityData("Beijing", "Beijing", "CN", 39.9075, 116.3972));
                 update();
             } catch (Exception e) {
                 try {
-                    System.out.println("error");
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
@@ -134,6 +136,30 @@ public class WeatherServer {
                 }
             }
         }).start();
+    }
+
+    public List getCityList(String name) throws IOException, URISyntaxException {
+        List<CityData> cityDataList = new ArrayList<>();
+        String cityUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + name + "&limit=5&appid=" + API_KEY;
+        URL url = new URL(cityUrl).toURI().toURL();
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpsURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            JSONArray data = new JSONArray(response.toString());
+            int num = data.length();
+            for (int i = 0; i < 3 && i < num; ++i) {
+                cityDataList.add(new CityData(data.getJSONObject(i).getString("name"), data.getJSONObject(i).getString("state"), data.getJSONObject(i).getString("country"), data.getJSONObject(i).getDouble("lat"), data.getJSONObject(i).getDouble("lon")));
+            }
+        }
+        return cityDataList;
     }
 
 }

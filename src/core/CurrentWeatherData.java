@@ -12,8 +12,8 @@ public class CurrentWeatherData extends WeatherData {
     public String clouds;
     public String iconId;
 
-    public CurrentWeatherData(String city) throws IOException, URISyntaxException {
-        super(city, "weather");
+    public CurrentWeatherData(CityData cityData) throws IOException, URISyntaxException {
+        super(cityData, "weather");
     }
 
     @Override

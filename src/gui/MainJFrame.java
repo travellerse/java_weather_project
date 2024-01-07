@@ -4,6 +4,7 @@
 
 package gui;
 
+import core.CityData;
 import core.WeatherServer;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ import java.util.ResourceBundle;
  */
 public class MainJFrame extends JFrame {
 
+    public WeatherServer weatherServer = new WeatherServer();
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
     private JPanel titlePanel;
     private JLabel currentTime;
@@ -33,7 +35,6 @@ public class MainJFrame extends JFrame {
     private JLabel currentWind;
     private JLabel currentHumidity;
     private JLabel currentClouds;
-    public WeatherServer weatherServer = new WeatherServer();
     private JLabel currentAQI;
     private JLabel moderatoryPolluted;
     private JPanel futureWeatherPanel;
@@ -50,6 +51,10 @@ public class MainJFrame extends JFrame {
     private JLabel iconLabel5;
     private JPanel lineJPanel;
     private JLabel primaryPollutants;
+    private JTextField citySearchField;
+    private JButton searchButton;
+    private JComboBox<String> searchResults;
+    private JButton verifyButton;
     public MainJFrame() {
         weatherServer.start((long) (1000));
         initComponents();
@@ -67,25 +72,18 @@ public class MainJFrame extends JFrame {
     }
 
     private void changeWeatherShow() {
+        this.currentPosition.setText(this.weatherServer.cityData.getCity());
         this.currentWeather.setText(this.weatherServer.currentWeatherData.weather);
         this.currentTemperature.setText(this.weatherServer.currentWeatherData.temperature + "℃");
         this.currentWind.setText("Wind: " + this.weatherServer.currentWeatherData.wind + "m/s");
         this.currentHumidity.setText("Humidity: " + this.weatherServer.currentWeatherData.humidity + "%");
         this.currentClouds.setText("Clodus: " + this.weatherServer.currentWeatherData.clouds + "%");
-        System.out.println("/image/" + this.weatherServer.currentWeatherData.iconId + "@2x.png");
-        this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.currentWeatherData.iconId + "@2x.png")));
+                this.weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.currentWeatherData.iconId + "@2x.png")));
         this.currentAQI.setText("AQI: " + this.weatherServer.airPolutionData.AQI);
         this.moderatoryPolluted.setText(this.weatherServer.airPolutionData.getModeratoryPolluted());
         this.primaryPollutants.setText("<html>Primary Pollutants: <br>" + this.weatherServer.airPolutionData.mainPollution+"</html>");
 
-        System.out.println(this.weatherServer.airPolutionData.co);
-        System.out.println(this.weatherServer.airPolutionData.no);
-        System.out.println(this.weatherServer.airPolutionData.no2);
-        System.out.println(this.weatherServer.airPolutionData.o3);
-        System.out.println(this.weatherServer.airPolutionData.so2);
-        System.out.println(this.weatherServer.airPolutionData.pm2_5);
-        System.out.println(this.weatherServer.airPolutionData.calculateAQI());
-    }
+                                                            }
 
     private void changeWeatherCalendarShow() {
         this.dayLabel1.setText("<html>Today<br>" + this.weatherServer.futureWeatherData.dataSet[0].date+"</html>");
@@ -95,7 +93,6 @@ public class MainJFrame extends JFrame {
         this.dayLabel5.setText("<html>"+weatherServer.getWeekday(this.weatherServer.futureWeatherData.dataSet[4].date)+"<br>"+this.weatherServer.futureWeatherData.dataSet[4].date+"</html>");
 
         this.iconLabel1.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[0].iconId + "@2x.png")));
-        this.iconLabel1.updateUI();
         this.iconLabel2.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[1].iconId + "@2x.png")));
         this.iconLabel3.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[2].iconId + "@2x.png")));
         this.iconLabel4.setIcon(new ImageIcon(getClass().getResource("/image/" + this.weatherServer.futureWeatherData.dataSet[3].iconId + "@2x.png")));
@@ -122,6 +119,37 @@ public class MainJFrame extends JFrame {
         changeWeatherCalendarShow();
         refreshButton.setText("Refresh");
         refreshButton.setEnabled(true);
+    }
+
+    private void searchButtonMouseClicked(MouseEvent e){
+        searchButton.setText("Searching...");
+        searchButton.setEnabled(false);
+        java.util.List<CityData> result = null;
+        try {
+            result = weatherServer.getCityList(citySearchField.getText());
+        } catch (IOException | URISyntaxException ex) {
+            JOptionPane.showMessageDialog(null,"网络已断开");
+        }
+        this.searchResults.removeAllItems();
+        for (int i = 0; i < result.size(); i++) {
+            this.searchResults.addItem(result.get(i).getCity());
+        }
+        searchButton.setText("Search");
+        searchButton.setEnabled(true);
+    }
+
+    private void verifyButtonMouseClicked(MouseEvent e){
+        verifyButton.setText("Verifying...");
+        verifyButton.setEnabled(false);
+        try {
+            weatherServer.changeCity(new CityData(searchResults.getSelectedItem().toString()));
+        } catch (IOException | URISyntaxException ex) {
+            JOptionPane.showMessageDialog(null,"网络已断开");
+        }
+        changeWeatherShow();
+        changeWeatherCalendarShow();
+        verifyButton.setText("Verify");
+        verifyButton.setEnabled(true);
     }
 
     private void initComponents() {
@@ -198,10 +226,46 @@ public class MainJFrame extends JFrame {
             currentWeatherPanel.setBorder(new SoftRectangleBorder());
             currentWeatherPanel.setLayout(null);
 
+            //---- citySearchField ----
+            citySearchField = new JTextField();
+            currentWeatherPanel.add(citySearchField);
+            citySearchField.setBounds(20,280,300,30);
+
+            //---- searchButton ----
+            searchButton = new JButton("Search");
+            searchButton.setBackground(new Color(0xff9933));
+            searchButton.setBorder(null);
+            searchButton.setBounds(340,280,60,25);
+            searchButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    searchButtonMouseClicked(e);
+                }
+            });
+            currentWeatherPanel.add(searchButton);
+
+            //---- searchResults ----
+            searchResults = new JComboBox<>();
+            currentWeatherPanel.add(searchResults);
+            searchResults.setBounds(20,310,300,30);
+
+            //---- searchButton ----
+            verifyButton = new JButton("Verify");
+            verifyButton.setBackground(new Color(0xff9933));
+            verifyButton.setBorder(null);
+            verifyButton.setBounds(340,310,60,25);
+            verifyButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    verifyButtonMouseClicked(e);
+                }
+            });
+            currentWeatherPanel.add(verifyButton);
+
             //---- weatherIcon ----
             weatherIcon.setIcon(new ImageIcon(getClass().getResource("/image/10d@2x.png")));
             currentWeatherPanel.add(weatherIcon);
-            weatherIcon.setBounds(20, 0, 100, 100);
+            weatherIcon.setBounds(20, 20, 100, 100);
 
             //---- currentTemperature ----
             currentTemperature.setBackground(new Color(0x00ffffff, true));
@@ -209,7 +273,7 @@ public class MainJFrame extends JFrame {
             currentTemperature.setFont(new Font("Inter", Font.BOLD, 32));
             currentTemperature.setBorder(null);
             currentWeatherPanel.add(currentTemperature);
-            currentTemperature.setBounds(120, 0, 100, 100);
+            currentTemperature.setBounds(120, 20, 100, 100);
 
             //---- currentWeather ----
             currentWeather.setBackground(new Color(0x00ffffff, true));
@@ -217,7 +281,7 @@ public class MainJFrame extends JFrame {
             currentWeather.setFont(new Font("Inter", Font.BOLD, 24));
             currentWeather.setBorder(null);
             currentWeatherPanel.add(currentWeather);
-            currentWeather.setBounds(220, 0, 200, 100);
+            currentWeather.setBounds(220, 20, 200, 100);
 
             //---- currentWind ----
             currentWind.setBackground(new Color(0x00ffffff, true));
@@ -225,7 +289,7 @@ public class MainJFrame extends JFrame {
             currentWind.setFont(new Font("Inter", Font.PLAIN, 16));
             currentWind.setBorder(null);
             currentWeatherPanel.add(currentWind);
-            currentWind.setBounds(20, 100, 120, 80);
+            currentWind.setBounds(20, 120, 120, 80);
 
             //---- currentHumidity ----
             currentHumidity.setBackground(new Color(0x00ffffff, true));
@@ -233,7 +297,7 @@ public class MainJFrame extends JFrame {
             currentHumidity.setFont(new Font("Inter", Font.PLAIN, 16));
             currentHumidity.setBorder(null);
             currentWeatherPanel.add(currentHumidity);
-            currentHumidity.setBounds(140, 100, 120, 80);
+            currentHumidity.setBounds(140, 120, 120, 80);
 
             //---- currentClouds ----
             currentClouds.setBackground(new Color(0x00ffffff, true));
@@ -241,7 +305,7 @@ public class MainJFrame extends JFrame {
             currentClouds.setText("Clouds: 100%");
             currentClouds.setBorder(null);
             currentWeatherPanel.add(currentClouds);
-            currentClouds.setBounds(260, 100, 120, 80);
+            currentClouds.setBounds(260, 120, 120, 80);
 
             //---- currentAQI ----
             currentAQI.setBackground(new Color(0x00ffffff, true));

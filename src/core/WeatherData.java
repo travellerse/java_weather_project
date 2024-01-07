@@ -11,29 +11,37 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public abstract class WeatherData {
+public class WeatherData {
     public static String API_KEY = "bbd32e6d5eb4b5d48946266f604ddfe7";
     public String date;
     public String city;
+    public String stage;
+    public String country;
     public Double lat;
     public Double lon;
     public String weatherClass;
     public JSONObject data;
 
-    public WeatherData(String city, String weatherClass) throws IOException, URISyntaxException {
+    public WeatherData(CityData cityData, String weatherClass) throws IOException, URISyntaxException {
         this.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-        changeCity(city);
+        changeCity(cityData);
         this.weatherClass = weatherClass;
     }
 
-    public void changeCity(String city) throws IOException, URISyntaxException {
-        this.city = city;
-        this.getCityPosition();
+    public WeatherData(CityData cityData) throws IOException, URISyntaxException {
+        changeCity(cityData);
+    }
+
+    public void changeCity(CityData cityData) throws IOException, URISyntaxException {
+        this.city = cityData.city;
+        this.stage = cityData.stage;
+        this.country = cityData.country;
+        this.lat = cityData.lat;
+        this.lon = cityData.lon;
     }
 
     public void getWeatherData() throws IOException, URISyntaxException {
         String weatherUrl = "https://api.openweathermap.org/data/2.5/" + weatherClass + "?lat=" + lat + "&lon=" + lon + "&units=metric&appid=" + API_KEY;
-        System.out.println(weatherUrl);
         URL url = new URL(weatherUrl).toURI().toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -50,11 +58,13 @@ public abstract class WeatherData {
         }
     }
 
-    public abstract void analyzeWeatherData();
+    public void analyzeWeatherData() {
+
+    }
 
     public void getCityPosition() throws IOException, URISyntaxException {
-        String weatherUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&limit=5&appid=" + API_KEY;
-        URL url = new URL(weatherUrl).toURI().toURL();
+        String cityUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&limit=5&appid=" + API_KEY;
+        URL url = new URL(cityUrl).toURI().toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         int responseCode = connection.getResponseCode();
@@ -71,6 +81,9 @@ public abstract class WeatherData {
             data = new JSONObject(response.toString());
             this.lat = data.getDouble("lat");
             this.lon = data.getDouble("lon");
+            this.city = data.getString("name");
+            this.country = data.getString("country");
+            this.stage = data.getString("state");
         }
     }
 }

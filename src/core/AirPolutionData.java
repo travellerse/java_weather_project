@@ -17,8 +17,8 @@ public class AirPolutionData extends WeatherData {
     public int AQI;
     public String mainPollution;
 
-    public AirPolutionData(String city) throws IOException, URISyntaxException {
-        super(city, "air_pollution");
+    public AirPolutionData(CityData cityData) throws IOException, URISyntaxException {
+        super(cityData, "air_pollution");
     }
 
     public int calculateAQI() {
