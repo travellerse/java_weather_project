@@ -1,6 +1,7 @@
 package core;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -43,7 +45,20 @@ public class WeatherServer {
             System.out.println(url);
 
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "网络已断开");
+        }
+    }
+
+    public static String getWeekday(String dateString) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = sdf.parse(dateString);
+
+            SimpleDateFormat sdfWeekday = new SimpleDateFormat("EEEE");
+            return sdfWeekday.format(date);
+        } catch (ParseException e) {
             e.printStackTrace();
+            return "Invalid Date";
         }
     }
 
@@ -54,32 +69,7 @@ public class WeatherServer {
         futureWeatherData.analyzeWeatherData();
         airPolutionData.getWeatherData();
         airPolutionData.analyzeWeatherData();
-    }
-
-    public void start(Long milliseconds) {
-        try {
-            currentWeatherData = new CurrentWeatherData("Beijing");
-            futureWeatherData = new FutureWeatherData("Beijing");
-            airPolutionData = new AirPolutionData("Beijing");
-            update();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        new Thread(() -> {
-            boolean isInternetConnected = checkInternetConnection();
-            while (true) {
-                try {
-                    Thread.sleep(milliseconds);
-                    if (isIntegerHour() || !isInternetConnected) {
-                        update();
-                        isInternetConnected = checkInternetConnection();
-                    }
-                } catch (InterruptedException | IOException | URISyntaxException e) {
-                    System.out.println("Internet Connection Error");
-                    isInternetConnected = checkInternetConnection();
-                }
-            }
-        }).start();
+        airPolutionData.calculateAQI();
     }
 
     public void changeCity(String city) throws IOException, URISyntaxException {
@@ -110,6 +100,40 @@ public class WeatherServer {
         SimpleDateFormat formatter = new SimpleDateFormat("mmss");
         Date date = new Date(System.currentTimeMillis());
         return Integer.parseInt(formatter.format(date)) == 0;
+    }
+
+    public void start(Long milliseconds) {
+        while (currentWeatherData == null || futureWeatherData == null || airPolutionData == null) {
+            try {
+                currentWeatherData = new CurrentWeatherData("Beijing");
+                futureWeatherData = new FutureWeatherData("Beijing");
+                airPolutionData = new AirPolutionData("Beijing");
+                update();
+            } catch (Exception e) {
+                try {
+                    System.out.println("error");
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        new Thread(() -> {
+            boolean isInternetConnected = checkInternetConnection();
+            while (true) {
+                try {
+                    Thread.sleep(milliseconds);
+                    if (isIntegerHour() || !isInternetConnected) {
+                        update();
+                        isInternetConnected = checkInternetConnection();
+                    }
+                } catch (InterruptedException | IOException | URISyntaxException e) {
+                    if (isInternetConnected)
+                        JOptionPane.showMessageDialog(null, "网络已断开");
+                    isInternetConnected = checkInternetConnection();
+                }
+            }
+        }).start();
     }
 
 }

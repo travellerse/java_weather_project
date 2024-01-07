@@ -12,7 +12,7 @@ import java.util.Date;
 
 public class FutureWeatherData extends WeatherData {
 
-    public DataSet dataSet[] = new DataSet[5];
+    public DataSet[] dataSet = new DataSet[5];
 
     public FutureWeatherData(String city) throws IOException, URISyntaxException {
         super(city, "forecast");
@@ -83,7 +83,7 @@ public class FutureWeatherData extends WeatherData {
             Date endDay = dft.parse(end);
             Long starTime = star.getTime();
             Long endTime = endDay.getTime();
-            Long num = endTime - starTime;
+            long num = endTime - starTime;
             index = (int) (num / 24 / 60 / 60 / 1000);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -91,7 +91,7 @@ public class FutureWeatherData extends WeatherData {
         return index;
     }
 
-    public class DataSet {
+    public static class DataSet {
         public int maxTemperature;
         public int minTemperature;
         public String iconId;

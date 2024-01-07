@@ -33,6 +33,7 @@ public abstract class WeatherData {
 
     public void getWeatherData() throws IOException, URISyntaxException {
         String weatherUrl = "https://api.openweathermap.org/data/2.5/" + weatherClass + "?lat=" + lat + "&lon=" + lon + "&units=metric&appid=" + API_KEY;
+        System.out.println(weatherUrl);
         URL url = new URL(weatherUrl).toURI().toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

@@ -6,8 +6,6 @@ public class LineJPanel extends javax.swing.JPanel {
     //绘制折线图
     public int[] maxTemperature;
     public int[] minTemperature;
-    private int offsetX = 50;
-    private int offsetY = -30;
 
 
     public LineJPanel(int[] maxTemperature, int[] minTemperature) {
@@ -40,6 +38,9 @@ public class LineJPanel extends javax.swing.JPanel {
         g.setFont(font);
 
         // Draw the temperature lines
+        int offsetX = 50;
+        System.out.println("offsetX:" + offsetX);
+        int offsetY = -30;
         for (int i = 0; i < numDays - 1; i++) {
             int x1 = i * barWidth + offsetX;  // Add the X offset
             int x2 = (i + 1) * barWidth + offsetX;  // Add the X offset
@@ -58,13 +59,13 @@ public class LineJPanel extends javax.swing.JPanel {
             g.drawLine(x1, y1_min, x2, y2_min);
 
             // Draw temperature labels
-            g.drawString(Integer.toString(maxTemperature[i]) + "°", x1, y1_max - 5);
-            g.drawString(Integer.toString(minTemperature[i]) + "°", x1, y1_min + 15);
+            g.drawString(maxTemperature[i] + "°", x1, y1_max - 5);
+            g.drawString(minTemperature[i] + "°", x1, y1_min + 15);
         }
 
         // Draw the last day's labels
-        g.drawString(Integer.toString(maxTemperature[numDays - 1]) + "°", (numDays - 1) * barWidth, height - (int) ((maxTemperature[numDays - 1] - minTempValue) * scale) - 5);
-        g.drawString(Integer.toString(minTemperature[numDays - 1]) + "°", (numDays - 1) * barWidth, height - (int) ((minTemperature[numDays - 1] - minTempValue) * scale) + 15);
+        g.drawString(maxTemperature[numDays - 1] + "°", (numDays - 1) * barWidth + offsetX, height - (int) ((maxTemperature[numDays - 1] - minTempValue) * scale) + offsetY - 5);
+        g.drawString(minTemperature[numDays - 1] + "°", (numDays - 1) * barWidth + offsetX, height - (int) ((minTemperature[numDays - 1] - minTempValue) * scale) + offsetY + 15);
     }
 
     // Helper method to find the maximum value in an array

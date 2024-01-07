@@ -57,6 +57,22 @@ public class AirPolutionData extends WeatherData {
         return 500;
     }
 
+    public String getModeratoryPolluted() {
+        if (AQI <= 50) {
+            return "优";
+        } else if (AQI <= 100) {
+            return "良";
+        } else if (AQI <= 150) {
+            return "轻度污染";
+        } else if (AQI <= 200) {
+            return "中度污染";
+        } else if (AQI <= 300) {
+            return "重度污染";
+        } else {
+            return "严重污染";
+        }
+    }
+
     @Override
     public void analyzeWeatherData() {
         JSONArray list = data.getJSONArray("list");
