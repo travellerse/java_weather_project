@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WeatherData {
-    public static String API_KEY = "bbd32e6d5eb4b5d48946266f604ddfe7";
+    public static String API_KEY = "YOUR_API_KEY";
     public String date;
     public String city;
     public String stage;
